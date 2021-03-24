@@ -22,8 +22,8 @@ IPAddr = socket.gethostbyname(hostname)
 
 
 # telegram bot ---
-TELEGRAM_TOKEN_ID = '696365945:AAEZgDVuEkc7SF1iqbT0zR2YolbCvUwdfT4'  # token-id
-TELEGRAM_CHAT_ID = '171620634'  # chat-id
+TELEGRAM_TOKEN_ID = ''  # token-id
+TELEGRAM_CHAT_ID = ''  # chat-id
 # ----------------
 
 parser = argparse.ArgumentParser(description='Notifier.')
