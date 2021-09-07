@@ -32,11 +32,42 @@ class LeastSquareGAN(object):
         return loss
 
 
+class VanillaGAN(object):
+    """ Vanilla GAN losses.
+    See `Generative Adversarial Nets` (https://arxiv.org/abs/1406.2661) for more details.
+    This is not recommended: use the NonSaturatingGAN, instead.
+    """
+    def __init__(self):
+        super(VanillaGAN, self).__init__()
+        self.real_label = 1.0
+        self.fake_label = 0.0
+
+    @staticmethod
+    def generator_loss(disc_pred_fake):
+        loss = tf.nn.sigmoid_cross_entropy_with_logits(logits=disc_pred_fake, labels=tf.ones_like(disc_pred_fake))
+        return tf.reduce_mean(loss)
+
+    @staticmethod
+    def discriminator_loss(disc_pred_real, disc_pred_fake):
+        loss_real = tf.nn.sigmoid_cross_entropy_with_logits(logits=disc_pred_real, labels=tf.ones_like(disc_pred_real))
+        loss_fake = tf.nn.sigmoid_cross_entropy_with_logits(logits=disc_pred_fake, labels=tf.zeros_like(disc_pred_fake))
+        return tf.reduce_mean(loss_real) + tf.reduce_mean(loss_fake)
+
+    @staticmethod
+    def discriminator_fake_loss(disc_pred_fake):
+        loss_fake = tf.nn.sigmoid_cross_entropy_with_logits(logits=disc_pred_fake, labels=tf.zeros_like(disc_pred_fake))
+        return tf.reduce_mean(loss_fake)
+
+    @staticmethod
+    def discriminator_real_loss(disc_pred_real):
+        loss_real = tf.nn.sigmoid_cross_entropy_with_logits(logits=disc_pred_real, labels=tf.ones_like(disc_pred_real))
+        return tf.reduce_mean(loss_real)
+
+
 class NonSaturatingGAN(object):
     """ Modified GAN losses.
     See `Generative Adversarial Nets` (https://arxiv.org/abs/1406.2661) for more details.
-    If modified==True, it uses the modified loss suggested by the authors; otherwise, it will compute the losses as in
-    the vanilla GAN (not recommended).
+    It uses the modified loss suggested by the GAN authors, which differs from the vanilla GAN.
     """
     def __init__(self):
         super(NonSaturatingGAN, self).__init__()
@@ -45,7 +76,7 @@ class NonSaturatingGAN(object):
 
     @staticmethod
     def generator_loss(disc_pred_fake):
-        loss = tf.nn.sigmoid_cross_entropy_with_logits(logits=disc_pred_fake, labels=tf.ones_like(disc_pred_fake))
+        loss = - log(sigmoid(disc_pred_fake))
         return tf.reduce_mean(loss)
 
     @staticmethod
@@ -72,13 +103,11 @@ class WassersteinGAN(object):
         super(WassersteinGAN, self).__init__()
         self.real_label = 0.0
         self.fake_label = 1e8
-        raise NotImplementedError  # todo: double check generator loss
-        # self.default_real_label =
 
-    # @staticmethod
-    # def generator_loss(disc_pred_fake, real_label=1.0):
-    #     loss = 0.5 * tf.reduce_mean(input_tensor=tf.math.squared_difference(disc_pred_fake, real_label))
-    #     return loss
+    @staticmethod
+    def generator_loss(disc_pred_fake):
+        loss = tf.reduce_mean(disc_pred_fake)
+        return loss
 
     @staticmethod
     def discriminator_loss(disc_pred_real, disc_pred_fake):
