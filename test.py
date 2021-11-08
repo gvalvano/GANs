@@ -26,8 +26,8 @@ import importlib
 
 
 # telegram bot ---
-TELEGRAM_TOKEN = '696365945:AAEZgDVuEkc7SF1iqbT0zR2YolbCvUwdfT4'  # token-id
-TELEGRAM_CHAT_ID = '171620634'  # chat-id
+TELEGRAM_TOKEN = ''  # token-id
+TELEGRAM_CHAT_ID = ''  # chat-id
 # ----------------
 
 
@@ -63,7 +63,7 @@ def main():
 
     start_time = time.time()
 
-    if args.notify:
+    if False:  # args.notify:
         try:
             model.test(writer, paired_data=model.test_paired_data)
             tel_message = 'Training finished.'
